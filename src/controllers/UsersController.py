@@ -2,13 +2,16 @@
 
 from models.UserModel import User
 from models.schema.UserSchema import user_schema, users_schema
-from flask import abort, make_response
+from flask import abort, make_response, request
 from config import db
 from werkzeug.security import generate_password_hash
 
 # Create User
-def create(user):
-    fname, lname, email, password = user.get('fname'), user.get('lname'), user.get('email'), user.get('password')
+def create():
+
+    data = request.get_json
+
+    fname, lname, email, password = data.get('fname'), data.get('lname'), data.get('email'), data.get('password')
     existing_person = User.query.filter(User.email == email).one_or_none()
 
     if existing_person is None:
@@ -29,7 +32,11 @@ def read_one(email):
         abort(404, f"User with email {email} not found")
 
 # Update User
-def update(email, user):
+def update(email):
+    data = request.get_json()
+
+    user = data
+
     existing_user = User.query.filter(User.email == email).one_or_none()
     if existing_user:
         existing_user.fname = user["fname"]

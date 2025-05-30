@@ -1,17 +1,20 @@
 # NotesController.py
 
-from flask import abort, make_response
+from flask import abort, make_response, request
 from config import db
 from models.UserModel import User, Note
 from models.schema.NoteSchema import note_schema
 
 # Create Note
-def create(note):
-    user_id = note.get("user_id")
+def create():
+    data = request.get_json()
+    
+    user_id = data.get("user_id")
+    print(user_id)
     user = User.query.get(user_id)
 
     if user:
-        new_note = note_schema.load(note, session=db.session)
+        new_note = note_schema.load(data, session=db.session)
         user.notes.append(new_note)
         db.session.commit()
         return note_schema.dump(new_note), 201
@@ -32,7 +35,12 @@ def read_one(note_id):
         )
 
 # Update Note
-def update(note_id, note):
+def update(note_id):
+
+    data = request.get_json()
+
+    note = data
+
     existing_note = Note.query.get(note_id)
     if existing_note:
         existing_note.content = note["content"]
