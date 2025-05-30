@@ -3,6 +3,7 @@
 from datetime import datetime
 from config import app, db
 from models.UserModel import User, Note
+from models.ActivityLog import ActivityLog
 from werkzeug.security import generate_password_hash
 
 USER_NOTES = [
@@ -42,6 +43,7 @@ USER_NOTES = [
 with app.app_context():
     db.drop_all()
     db.create_all()
+    
     for data in USER_NOTES:
         new_user = User(
             fname=data.get("fname"),
@@ -49,12 +51,28 @@ with app.app_context():
             email=data.get("email"),
             password=data.get("password")
         )
-        for content, timestamp in data.get("notes", []):
-            new_user.notes.append(
-                Note(
-                    content=content,
-                    timestamp=datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S"),
-                )
-            )
+
         db.session.add(new_user)
+        db.session.flush()  # get new_user.id before commit
+
+        # Add activity log for user creation
+        db.session.add(ActivityLog(
+            user_id=new_user.id,
+            action="user_created",
+        ))
+
+        for content, timestamp in data.get("notes", []):
+            note = Note(
+                content=content,
+                timestamp=datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S"),
+                user_id=new_user.id
+            )
+            db.session.add(note)
+
+            # Log note creation
+            db.session.add(ActivityLog(
+                user_id=new_user.id,
+                action="create_note",
+            ))
+
     db.session.commit()

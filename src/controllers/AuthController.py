@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models.UserModel import User
 from config import app, db
 from models.schema.UserSchema import user_schema
+from flask_jwt_extended import create_access_token
 
 # imports for PyJWT authentication
 import jwt
@@ -49,6 +50,7 @@ def decodeToken(token):
 # Login 
 def login():
 	data = request.get_json()
+
 	
 	email, password = data.get('email'), data.get('password')
 	if not data or not email or not password:
@@ -57,7 +59,6 @@ def login():
 		
 	user = User.query.filter(User.email == email).one_or_none()
 
-	print(user)
 
 	if not user:
 		# returns 401 if user does not exist
@@ -65,12 +66,15 @@ def login():
 
 	if check_password_hash(user.password, password):
 		# generates the JWT Token
-		token = jwt.encode({
-			'id': user.id,
-			'exp' : datetime.utcnow() + timedelta(minutes = 60)
-		}, app.config['JWT_SECRET_KEY'])
+		# token = jwt.encode({
+		# 	'id': user.id,
+		# 	'exp' : datetime.utcnow() + timedelta(minutes = 60)
+		# }, app.config['JWT_SECRET_KEY'])
 
-		return make_response(jsonify({'token' : token}), 201)
+		token = create_access_token(identity=str(user.id))
+
+		return make_response(jsonify({'token': token}), 201)
+	
 	# returns 403 if password is wrong
 	abort(403, f"Invalid password")
 

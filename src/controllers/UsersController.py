@@ -5,6 +5,7 @@ from models.schema.UserSchema import user_schema, users_schema
 from flask import abort, make_response, request
 from config import db
 from werkzeug.security import generate_password_hash
+from utils.activity_logger import log_activity
 
 # Create User
 def create():
@@ -19,6 +20,10 @@ def create():
         new_user = User(fname = fname,lname = lname,email = email,password = generate_password_hash(password))
         db.session.add(new_user)
         db.session.commit()
+
+        # Add activity log for user creation
+        log_activity(new_user.id, "user_created")
+
         return user_schema.dump(new_user), 201
     else:
         abort(406, f"User with email {email} already exists")
@@ -45,6 +50,9 @@ def update(email):
         existing_user.password = user["password"]
         db.session.merge(existing_user)
         db.session.commit()
+
+        log_activity(existing_user.id, "user_updated")
+
         return user_schema.dump(existing_user), 201
     else:
         abort(404, f"User with email {email} not found")
@@ -55,6 +63,9 @@ def delete(email):
     if existing_user:
         db.session.delete(existing_user)
         db.session.commit()
+
+        log_activity(existing_user.id, "user_deleted")
+
         return make_response(f"User with email {email} successfully deleted", 200)
     else:
         abort(404, f"User with email {email} not found")

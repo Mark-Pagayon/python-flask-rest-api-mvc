@@ -263,6 +263,205 @@
           }
         }
       }
+    },
+    "/activity_logs/user": {
+      "get": {
+        "operationId": "controllers.ActivityLogsController.get_activity_logs",
+        "summary": "Get activity logs for the current user",
+        "description": "Returns a list of activity log entries associated with the authenticated user.",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of activity logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ActivityLog"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/activity_logs": {
+      "get": {
+        "operationId": "controllers.ActivityLogsController.get_all_logs",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+
+        "summary": "Get all activity logs",
+        "responses": {
+          "200": {
+            "description": "List of activity logs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ActivityLog" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "controllers.ActivityLogsController.create_activity_log",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create a new activity log",
+
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewActivityLog"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Activity log created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/activity-logs/{id}": {
+      "get": {
+        "operationId": "controllers.ActivityLogsController.get_log",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get activity log by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activity log",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ActivityLog" }
+              }
+            }
+          },
+          "404": {
+            "description": "Log not found"
+          }
+        }
+      },
+      "put": {
+        "operationId": "controllers.ActivityLogsController.update_log",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Update activity log",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": { "type": "string" }
+                },
+                "required": ["action"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Log updated"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Log not found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "controllers.ActivityLogsController.delete_log",
+        "tags": ["Activity Logs"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete activity log",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Log deleted"
+          },
+          "404": {
+            "description": "Log not found"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -308,6 +507,30 @@
             "type": "integer"
           }
         }
+      },
+      "ActivityLog": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Type of action performed",
+            "example": "login"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO format timestamp",
+            "example": "2025-05-30T08:15:30Z"
+          }
+        }
+      },
+      "NewActivityLog": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "integer" },
+          "action": { "type": "string" }
+        },
+        "required": ["user_id", "action"]
       }
     },
     "parameters": {
@@ -384,6 +607,7 @@
       }
     }
   },
+
   "security": [
     {
       "bearerAuth": []
