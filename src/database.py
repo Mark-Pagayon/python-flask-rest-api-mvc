@@ -6,6 +6,8 @@ from models.UserModel import User, Note
 from models.ActivityLog import ActivityLog
 from werkzeug.security import generate_password_hash
 
+
+# Sample data for users and their notes
 USER_NOTES = [
     {
         "fname": "Fairy",
@@ -39,6 +41,8 @@ USER_NOTES = [
         ],
     },
 ]
+
+# SEED THE DATABASE / INITIALIZE THE DATABASE WITH THE SAMPLE DATA
 
 with app.app_context():
     db.drop_all()

@@ -1,50 +1,29 @@
-# python-flask-rest-api-mvc
+# Changelog
 
-A complete REST API written in python flask framework with swagger API docs, Sqlite3 database and sqlalchemy ORM with PyTest
+### Added
 
-# Tech stack
-- Python
-- Flask python framework
-- Sqlite3 database
-- Sqlite browser for database view
-- SQLAlchemy database ORM
-- PyTest for unit testing
-- Pip python package manager
+- **Activity Logs** feature:
 
-# Install steps
-```
-sudo apt update
-sudo apt -y upgrade
-python3 -V
-sudo apt install -y python3-pip
-sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
-pip3 install requirements.txt
-pip3 install marshmallow-sqlalchemy
-pip3 install connexion[swagger-ui]
+  - `GET /activity-logs`: Fetch all activity logs (admin only).
+  - `GET /activity-logs/user`: Fetch activity logs for the authenticated user.
+  - `GET /activity-logs/{id}`: Fetch a single activity log by ID.
+  - `POST /activity-logs`: Create a new activity log.
+  - `PUT /activity-logs/{id}`: Update an existing activity log.
+  - `DELETE /activity-logs/{id}`: Delete an activity log.
+  - JWT-based authentication required for protected routes.
 
-```
+- **Unit Tests** using **pytest**:
+  - Added tests for all **Activity Log endpoints**.
+  - Included **positive and negative test cases** for:
+    - Creation
+    - Retrieval (single and all)
+    - Update
+    - Deletion
+  - Achieved **100% test coverage** for Activity Logs feature.
 
-# Database setup
-```
-python3 database.py
+### Changed
 
-```
+- Updated **Swagger/OpenAPI documentation** to include Activity Log paths and schemas.
+- Modified `components.securitySchemes` to ensure bearer token authentication is clearly defined.
 
-# Run application
-```
-python3 app.py - For development or local
-nohup python app.py & - For running as background process to test on live domain
-
-```
-# Errors
-- Install missing packages using - pip3 intall packagename
-
-# Bouns configurations
-- Create virtual env and run/setup project inside that
-```
-python3 -m venv /path/project
-source /path/project/bin/activate - For activating virtual environment
-deactivate - For deactivating virtual environment
-
-```
-
+---

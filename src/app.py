@@ -10,7 +10,7 @@ from routes.users_bp import users_bp
 from routes.auth_bp import auth_bp
 from routes.activity_log_bp import activity_logs_bp
 
-
+# REGISTER ROUTES WITH BLUEPRINTS
 app.register_blueprint(users_bp, url_prefix='/users')
 app.register_blueprint(notes_bp, url_prefix='/notes')
 app.register_blueprint(auth_bp, url_prefix='/auth')
@@ -22,8 +22,11 @@ app = config.connex_app
 #     db.drop_all()
 #     db.create_all()
 
+# LOAD SWAGGER DOCUMENTATION
 app.add_api(config.basedir / "swagger.json")
 
+
+# HOME ROUTE
 @app.route("/")
 def home():
     users = User.query.all()

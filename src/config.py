@@ -1,22 +1,3 @@
-# import pathlib
-# import connexion
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_marshmallow import Marshmallow
-# from flask_jwt_extended import JWTManager
-
-# basedir = pathlib.Path(__file__).parent.resolve()
-# connex_app = connexion.FlaskApp(__name__, specification_dir=basedir)  # <-- change here
-
-# app = connex_app.app
-# app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{basedir / 'app.db'}"
-# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
-
-# db = SQLAlchemy(app)
-# ma = Marshmallow(app)
-# jwt = JWTManager(app)
-
-# config.py
 import pathlib
 import connexion
 from flask_sqlalchemy import SQLAlchemy
@@ -37,6 +18,8 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 jwt = JWTManager(app)
 
+# CONFIGURATION FOR TESTING, USES IN MEMORY DATABASE INSTEAD OF THE DEFAULT
+
 def init_test_config(flask_app):
     flask_app.config["TESTING"] = True
     flask_app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
@@ -48,16 +31,16 @@ def create_test_app():
     connex_app = connexion.FlaskApp(__name__, specification_dir=basedir)
     app = connex_app.app
 
-    # 🔐 Configure app for testing
+    # Configure app for testing
     app.config["TESTING"] = True
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = "test-secret"
 
-    # ✅ Re-initialize with the correct app
+    # Re-initialize with the correct app
     db.init_app(app)
     ma.init_app(app)
-    jwt.init_app(app)  # ✅ VERY IMPORTANT
+    jwt.init_app(app)  
 
     app.register_blueprint(routes.users_bp.users_bp, url_prefix='/users')
     app.register_blueprint(routes.notes_bp.notes_bp, url_prefix='/notes')

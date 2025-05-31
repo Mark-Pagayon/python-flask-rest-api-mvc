@@ -4,7 +4,7 @@ from flask_jwt_extended import get_jwt_identity
 from models.ActivityLog import ActivityLog
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-
+# GETS THE ACTIVITY LOGS FOR A SPECIFIC USER
 def get_logs_for_user(user_id):
     logs = ActivityLog.query.filter_by(user_id=user_id).order_by(ActivityLog.timestamp.desc()).all()
     return [{
@@ -12,6 +12,7 @@ def get_logs_for_user(user_id):
         "timestamp": log.timestamp.isoformat()
     } for log in logs], 200
 
+# GETS THE ACTIVITY LOGS FOR THE LOGGED IN USER
 @jwt_required()
 def get_activity_logs():
     user_id = get_jwt_identity()
